@@ -3,7 +3,7 @@ import api from "../api/httpRequest";
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
+    user: JSON.parse(localStorage.getItem('user') || 'null'),
     error: null,
     success: null,
     token: localStorage.getItem('token') || null,
@@ -12,13 +12,17 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(credentials) {
       try {
-        const res = await api.post('/auth/login', credentials);
-        this.token = res.data.session.access_token;
-        this.user = res.data.user;
+        const { data } = await api.post('/auth/login', credentials);
+        this.token = data.session.access_token;
+        this.user = data.user;
+        localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('token', this.token);
 
         this.error = null;
-        return { success: true, message: res.data.message };
+        return { 
+          success: true, 
+          message: data.message 
+        };
       } catch (err) {
         this.error = err.response?.data?.message;
         return {
@@ -30,12 +34,13 @@ export const useAuthStore = defineStore('auth', {
 
     async register(credentials) {
       try {
-        const res = await api.post('/auth/register', credentials);
-        this.token = res.data.session.access_token;
-        this.user = res.data.user;
+        const { data } = await api.post('/auth/register', credentials);
+        this.token = data.session.access_token;
+        this.user = data.user;
+        localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('token', this.token);
 
-        this.success = res.data.message || "Register successful!";
+        this.success = data.message || "Register successful!";
         return {
           success: true,
           message: this.success,
@@ -53,6 +58,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = null;
       this.token = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
   }
 })
