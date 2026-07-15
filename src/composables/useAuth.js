@@ -32,14 +32,14 @@ export function useAuth() {
 
   const handleRegister = async (credentials) => {
     isLoading.value = true;
-    isError.value = false;
-    isSuccess.value = false;
+    isError.value = null;
+    isSuccess.value = null;
 
     try {
       const res = await store.register(credentials);
       if (res.success) {
         isSuccess.value = res.message;
-        setTimeout(() => router.push('/'), 1000);
+        setTimeout(() => router.push('/login'), 1500);
       } else {
         isError.value = res.message;
       }

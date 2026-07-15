@@ -2,5 +2,9 @@
 
 body {
   margin: 0;
-  background-color: var(--color-gray-900);
+  background-color: #050505;
+}
+
+.theme {
+  background-color: #050505;
 }
