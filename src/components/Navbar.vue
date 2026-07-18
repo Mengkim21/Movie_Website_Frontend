@@ -70,7 +70,7 @@ const { handleLogout} = useAuth();
       </div>
 
       <div class="mx-auto">
-        <ul class="flex gap-6">
+        <ul class="flex gap-6 items-center">
           <div v-if="authStore.user" class="flex gap-4 items-center">
             <span class="text-gray-300">{{ authStore.user?.email }}</span>
             <button
@@ -87,10 +87,10 @@ const { handleLogout} = useAuth();
             :key="index"
             :to="login.path"
             :class="[
-              'text-gray-600 font-semibold hover:text-white transition-colors p-3',
+              'text-gray-300 font-semibold transition-colors duration-200 p-3',
                 isActive(login.path)
-                  ? 'text-white rounded-xl bg-white/30 py-2 px-3'
-                  : 'text-gray-600 hover:text-white rounded-xl hover:bg-white/20 opacity-50 py-2 px-3'
+                  ? 'text-white rounded-xl bg-white/35 py-2 px-3'
+                  : 'hover:text-white rounded-xl hover:bg-white/15 py-2 px-3'
             ]"
           >
             {{ login.name }}

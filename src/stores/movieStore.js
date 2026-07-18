@@ -8,6 +8,10 @@ export const useMovieStore = defineStore('movies', {
     popular: [],
     topRated: [],
     upcoming: [],
+    discoverMovie: [],
+    totalPages: 0,
+    currentPage: 1,
+    discoverLoading: false
   }),
 
   actions: {
@@ -27,7 +31,7 @@ export const useMovieStore = defineStore('movies', {
         this.topRated = data.results;
         return { message: data.message };
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to load top rated movies."}
+        return { message: err.response?.data?.message || "Failed to load top rated movies." }
       }
     },
 
@@ -37,7 +41,7 @@ export const useMovieStore = defineStore('movies', {
         this.upcoming = data.results;
         return { message: data.message };
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to load upcoming movies."}
+        return { message: err.response?.data?.message || "Failed to load upcoming movies." }
       }
     },
 
@@ -47,7 +51,7 @@ export const useMovieStore = defineStore('movies', {
         this.popular = data.results;
         return { message: data.message };
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to load popular movies."}
+        return { message: err.response?.data?.message || "Failed to load popular movies." }
       }
     },
 
@@ -57,8 +61,32 @@ export const useMovieStore = defineStore('movies', {
         this.featured = data;
         return { message: data.message };
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to load featured movies."};
+        return { message: err.response?.data?.message || "Failed to load featured movies." };
       }
-    }
+    },
+
+    async fetchDiscover(params = {}) {
+      this.discoverLoading = true;
+      try {
+        const { data } = await api.get('/movies/discover', { params });
+        
+        if (params.page > 1) {
+          this.discoverMovie = [...this.discoverMovie, ...data.results]
+        } else {
+          this.discoverMovie = data.results;
+        }
+        this.totalPages = data.total_pages;
+        this.currentPage = params.page || 1;
+      } catch (err) {
+        return { message: err.response?.data?.message || "Failed to load discover movie" };
+      } finally {
+        this.discoverLoading = false;
+      }
+    },
+
+    clearDiscover() {
+      this.discoverMovie = [];
+      this.currentPage = 1;
+    },
   },
 })
