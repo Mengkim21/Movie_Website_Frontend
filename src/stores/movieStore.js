@@ -9,6 +9,7 @@ export const useMovieStore = defineStore('movies', {
     topRated: [],
     upcoming: [],
     discoverMovie: [],
+    meta: { title: '', description: '' },
     totalPages: 0,
     currentPage: 1,
     discoverLoading: false
@@ -65,18 +66,29 @@ export const useMovieStore = defineStore('movies', {
       }
     },
 
-    async fetchDiscover(params = {}) {
+    async fetchDiscover(params) {
+
+      const pageNumber = parseInt(params.page || 1);
+
+      if (pageNumber === 1) {
+        this.discoverMovie = [];
+        this.meta = { title: 'Loading...', description: '' };
+      }
+      
       this.discoverLoading = true;
       try {
         const { data } = await api.get('/movies/discover', { params });
         
-        if (params.page > 1) {
+        if (pageNumber > 1) {
           this.discoverMovie = [...this.discoverMovie, ...data.results]
         } else {
           this.discoverMovie = data.results;
         }
+
+        this.meta = data.meta;
         this.totalPages = data.total_pages;
-        this.currentPage = params.page || 1;
+        this.currentPage = data.page;
+        return data.results.length;
       } catch (err) {
         return { message: err.response?.data?.message || "Failed to load discover movie" };
       } finally {

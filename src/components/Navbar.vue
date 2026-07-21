@@ -40,7 +40,7 @@ const { handleLogout} = useAuth();
 </script>
 
 <template>
-  <nav class="pointer-events-none fixed top-5 z-50 hidden h-[4rem] transition-[left,right,width,opacity,transform] duration-200 lg:flex left-1/2 w-[min(980px,calc(100vw-8rem))] -translate-x-1/2 opacity-100">
+  <nav class="pointer-events-none fixed top-6 z-50 hidden h-[4rem] transition-[left,right,width,opacity,transform] duration-200 lg:flex left-1/2 w-[min(980px,calc(100vw-8rem))] -translate-x-1/2 opacity-100">
     <div class="pointer-events-auto w-full h-[4rem] rounded-[24px] flex items-center gap-2 px-2.5 py-2 backdrop-blur-[42px] bg-black/[0.2] backdrop-saturate-150  border-gray-700 ring-1 ring-white/[0.045] shadow-[0_20px_64px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.06)]">
       <div class="flex items-center mx-auto justify-center">
         <router-link 
