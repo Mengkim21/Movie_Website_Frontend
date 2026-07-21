@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
 import LoginPage from "../views/authView/LoginPage.vue";
 import HomePage from "../views/homeView/HomePage.vue";
-import MoviePage from "../views/moviesView/MoviePage.vue";
+import MoviesPage from "../views/moviesView/MoviesPage.vue";
+import ShowsPage from "../views/showView/ShowsPage.vue";
 
 const routes = [
   {
@@ -18,8 +19,13 @@ const routes = [
   {
     path: '/movies',
     name: 'Movies',
-    component: MoviePage
+    component: MoviesPage
   },
+  {
+    path: '/shows',
+    name: 'Shows',
+    component: ShowsPage
+  }
 ];
 
 const router = createRouter({
@@ -27,7 +33,7 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const authStore = useAuthStore();
   const isLoggedIn = !!authStore.token;
 
@@ -35,11 +41,10 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.name);
 
   if (to.name !== "Login" && !isLoggedIn && authRequired) {
-    next({ name: "Login" });
+    return { name: "Login" };
   } else if (to.name === "Login" && isLoggedIn) {
-    next({ path: "/" });
+    return { path: "/" };
   } 
-  next();
 });
 
 export default router;
