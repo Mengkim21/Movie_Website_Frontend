@@ -1,10 +1,10 @@
 <script setup>
 import { ChevronLeft, ChevronRight, Leaf } from 'lucide-vue-next';
-import MovieCard from './MovieCard.vue';
+import MediaCard from './MediaCard.vue';
 import { ref } from 'vue';
 defineProps({
   title: String,
-  movies: Array
+  items: Array,
 });
 
 const scrollRow = ref(null);
@@ -46,13 +46,14 @@ const scroll = (direction) => {
         class="relative flex gap-4 px-6 py-4 overflow-x-auto scrollbar-none scroll-smooth"
       >
         <div 
-          v-for="movie in movies"
-          :key="movie.id"
+          v-for="item in items"
+          :key="item.id"
           class="min-w-[130px] md:min-w-[160px] lg:min-w-[170px] transition-transform duration-300"
         >
-          <MovieCard :movie="movie"/>
+          <MediaCard :item="item"/>
         </div>
       </div>
+
       <button 
         @click="scroll('right')"
         class="absolute top-0 right-0 z-30 flex items-center justify-center h-full w-12 lg:w-20 bg-gradient-to-l from-black/70 to-transparent cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300"
