@@ -1,30 +1,30 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
-import LoginPage from "../views/authView/LoginPage.vue";
-import HomePage from "../views/homeView/HomePage.vue";
-import MoviesPage from "../views/moviesView/MoviesPage.vue";
-import ShowsPage from "../views/showView/ShowsPage.vue";
+import LoginView from "../views/authView/LoginView.vue";
+import HomeView from "../views/homeView/HomeView.vue";
+import MoviesView from "../views/moviesView/MoviesView.vue";
+import ShowsView from "../views/showView/ShowsView.vue";
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: LoginPage
+    component: LoginView
   },
   {
     path: '/',
     name: 'Home',
-    component: HomePage
+    component: HomeView
   },
   {
     path: '/movies',
     name: 'Movies',
-    component: MoviesPage
+    component: MoviesView
   },
   {
     path: '/shows',
     name: 'Shows',
-    component: ShowsPage
+    component: ShowsView
   }
 ];
 

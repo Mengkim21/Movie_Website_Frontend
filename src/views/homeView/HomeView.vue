@@ -1,16 +1,22 @@
 <script setup>
 import { computed, onMounted } from 'vue';
-import { useMovie } from '../../composables/useMovie';
-import { useMovieStore } from '../../stores/movieStore';
+import { useMovie } from '../../composables/useMovie.js';
+import { useTV } from '../../composables/useTV.js';
+import { useMovieStore } from '../../stores/movieStore.js';
+import { useTVStore } from '../../stores/tvStore.js';
 import HeroBanner from '../../components/HeroBanner.vue';
-import MovieRow from '../../components/MovieRow.vue';
+import MediaRow from '../../components/MediaRow.vue';
 
 const { isLoading, isError, loadHomeMovies } = useMovie();
+const { loadHomeTV } = useTV();
 const movieStore = useMovieStore();
+const tvStore = useTVStore();
 
 onMounted(async () => {
   if (movieStore.trending.length === 0) {
     await loadHomeMovies();
+  } else {
+    await loadHomeTV();
   }
 })
 
@@ -27,9 +33,12 @@ const featuredMovies = computed(() => movieStore.trending[0]);
       <HeroBanner :movie="featuredMovies"/>
 
       <div class="relative -mt-20 z-20 space-y-8">
-        <MovieRow title="Trending This Week" :movies="movieStore.trending"/>
-        <MovieRow title="Popular Movies" :movies="movieStore.popular"/>
-        <MovieRow title="Top Rated Movies" :movies="movieStore.topRated"/>
+        <MediaRow title="Trending Movies This Week" :items="movieStore.trending"/>
+        <MediaRow title="Trending Shows This Week" :items="tvStore.trending"/>
+        <MediaRow title="Popular Movies" :items="movieStore.popular"/>
+        <MediaRow title="Popular Shows" :items="tvStore.popular"/>
+        <MediaRow title="Top Rated Movies" :items="movieStore.topRated"/>
+        <MediaRow title="Top Rated Shows" :items="tvStore.topRated"/>
       </div>
     </div>
 

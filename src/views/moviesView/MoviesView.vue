@@ -2,7 +2,7 @@
 import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useMovieStore } from '../../stores/movieStore.js';
-import MovieCard from '../../components/MovieCard.vue';
+import MediaCard from '../../components/MediaCard.vue';
 import FilterBar from '../../components/FilterBar.vue';
 
 const route = useRoute();
@@ -91,7 +91,7 @@ onUnmounted(() => observer?.disconnect());
     <div class="flex items-start lg:gap-12 xl:gap-16">
 
       <!-- Sticky Filter Sidebar -->
-      <FilterBar class="hidden md:block"/>
+      <FilterBar type="movie" class="hidden md:block"/>
 
       <!-- Movie Grid -->
       <div class="flex-1">
@@ -105,10 +105,10 @@ onUnmounted(() => observer?.disconnect());
         </header>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          <MovieCard 
+          <MediaCard 
             v-for="movie in movieStore.discoverMovie"
             :key="movie.id"
-            :movie="movie"
+            :item="movie"
           />
         </div>
 

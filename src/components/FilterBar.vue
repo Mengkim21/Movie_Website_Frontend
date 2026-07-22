@@ -1,34 +1,54 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useGenreStore } from '../stores/genreStore';
 
 const route = useRoute();
 const router = useRouter();
 const genreStore = useGenreStore();
 
-const categories = [
-  {
-    name: 'All Movies',
-    value: 'all'
-  },
-  {
-    name: 'Popular',
-    value: 'popular',
-  },
-  {
-    name: 'Top Rated',
-    value: 'top_rated',
-  },
-  {
-    name: 'Upcoming',
-    value: 'upcoming',
+const props = defineProps({
+  type: String
+});
+
+const categories = computed(() => {
+  const base = [
+    { 
+      name: 'Popular', 
+      value: 'popular'
+    },
+    {
+      name: 'Top Rated', 
+      value: 'top_rated'
+    }
+  ];
+
+  if (props.type === 'movie') {
+    return [
+      { name: 'All Movies', value: 'all' },
+      ...base,
+      { name: 'Upcoming', value: 'upcoming' }
+    ];
+  } else {
+    return [
+      { name: 'All Shows', value: 'all' },
+      ...base,
+      { name: 'Airing Today', value: 'airing_today'}
+    ];
   }
-];
+})
 
 onMounted (() => {
-  genreStore.fetchMovieGenre();
+  if (props.type === 'movie') {
+    genreStore.fetchMovieGenre();
+  } else {
+    genreStore.fetchTVGenre();
+  }
 });
+
+const genres = computed(() => {
+  return props.type === 'movie' ? genreStore.movieGenres : genreStore.tvGenres;
+})
 
 const filterOption = (type, value) => {
   const query = {...route.query, page: 1};
@@ -77,7 +97,7 @@ const isActive = (type, value) => {
       <div class="flex flex-col gap-3 p-3 mt-6">
         <p class="text-gray-400 text-sm font-semibold">Genres</p>
         <button
-          v-for="genre in genreStore.movieGenres"
+          v-for="genre in genres"
           :key="genre.id"
           @click="filterOption('genre', genre.id)"
           :class="[

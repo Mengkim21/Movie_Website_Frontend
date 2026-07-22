@@ -1,7 +1,7 @@
 import api from "../api/httpRequest";
 import { defineStore } from "pinia";
 
-export const useShowStore = defineStore('tv', {
+export const useTVStore = defineStore('tv', {
   state: () => ({
     trending: [],
     popular: [],
@@ -21,27 +21,37 @@ export const useShowStore = defineStore('tv', {
         this.popular = data.results;
         return { message: data.message };
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to load popular shows" };
+        return { message: err.response?.data?.message || "Failed to load popular shows." };
+      }
+    },
+
+    async fetchTrendingShows() {
+      try {
+        const { data } = await api.get('/tv/trending/week');
+        this.trending = data.results;
+        return { message: data.message };
+      } catch (err) {
+        return { message: err.response?.data?.message || "Failed to load trending shows." };
       }
     },
 
     async fetchTopRatedShows() {
       try {
         const { data } = await api.get('/tv/top_rated');
-        this.popular = data.results;
+        this.topRated = data.results;
         return { message: data.message };
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to top rated shows" };
+        return { message: err.response?.data?.message || "Failed to load top rated shows." };
       }
     },
 
     async fetchAiringTodayShows() {
       try {
         const { data } = await api.get('/tv/airing_today');
-        this.popular = data.results;
+        this.airingToday = data.results;
         return { message: data.message };
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to load airing today shows" };
+        return { message: err.response?.data?.message || "Failed to load airing today shows." };
       }
     },
 
@@ -68,7 +78,7 @@ export const useShowStore = defineStore('tv', {
         this.currentPage = data.page;
         return data.results.length;
       } catch (err) {
-        return { message: err.response?.data?.message || "Failed to load discover shows" };
+        return { message: err.response?.data?.message || "Failed to load discover shows." };
       } finally {
         this.discoverLoading = false;
       }
