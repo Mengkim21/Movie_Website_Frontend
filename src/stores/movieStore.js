@@ -16,7 +16,9 @@ export const useMovieStore = defineStore('movies', {
   }),
 
   actions: {
-    async fetchTrendingMovies() {
+    async fetchTrendingMovies(forceRefresh = false) {
+      if (this.trending.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/movies/trending/week');
         this.trending = data.results;
@@ -26,7 +28,9 @@ export const useMovieStore = defineStore('movies', {
       }
     },
 
-    async fetchTopRatedMovies() {
+    async fetchTopRatedMovies(forceRefresh = false) {
+      if (this.topRated.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/movies/top_rated');
         this.topRated = data.results;
@@ -36,7 +40,9 @@ export const useMovieStore = defineStore('movies', {
       }
     },
 
-    async fetchUpcomingMovies() {
+    async fetchUpcomingMovies(forceRefresh = false) {
+      if (this.upcoming.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/movies/upcoming');
         this.upcoming = data.results;
@@ -46,7 +52,9 @@ export const useMovieStore = defineStore('movies', {
       }
     },
 
-    async fetchPopularMovies() {
+    async fetchPopularMovies(forceRefresh = false) {
+      if (this.popular.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/movies/popular');
         this.popular = data.results;
@@ -58,7 +66,7 @@ export const useMovieStore = defineStore('movies', {
 
     async fetchFeaturedMovies() {
       try {
-        const { data } = await api.get('/movies/featured');
+        const { data } = await api.get('/movies/featured/week');
         this.featured = data;
         return { message: data.message };
       } catch (err) {
