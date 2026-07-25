@@ -17,8 +17,8 @@ defineProps({
       <div class="absolute inset-0 bg-gradient-to-r from-theme/80 via-transparent to-transparent"></div>
     </div>
 
-    <div class="relative h-[85%] flex flex-col justify-end px-6 pb-20 lg:px-20 lg:pb-30">
-      <div class="mb-6 max-w-[300px] md:max-w-[500px]">
+    <div class="relative h-[90%] flex flex-col justify-end px-6 pb-20 lg:px-20 lg:pb-25">
+      <div class="mb-6 max-w-[300px]">
         <img
           v-if="movie?.logo_path"
           :src="movie.logo_path"

@@ -30,6 +30,5 @@ export function useTV() {
     isLoading,
     isError,
     loadHomeTV,
-    trending: store.trending,
   }
 }

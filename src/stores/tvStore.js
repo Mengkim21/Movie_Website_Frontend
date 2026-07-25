@@ -15,7 +15,9 @@ export const useTVStore = defineStore('tv', {
   }),
 
   actions: {
-    async fetchPopularShows() {
+    async fetchPopularShows(forceRefresh = false) {
+      if (this.popular.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/tv/popular');
         this.popular = data.results;
@@ -25,7 +27,9 @@ export const useTVStore = defineStore('tv', {
       }
     },
 
-    async fetchTrendingShows() {
+    async fetchTrendingShows(forceRefresh = false) {
+      if (this.trending.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/tv/trending/week');
         this.trending = data.results;
@@ -35,7 +39,9 @@ export const useTVStore = defineStore('tv', {
       }
     },
 
-    async fetchTopRatedShows() {
+    async fetchTopRatedShows(forceRefresh = false) {
+      if (this.topRated.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/tv/top_rated');
         this.topRated = data.results;
@@ -45,7 +51,9 @@ export const useTVStore = defineStore('tv', {
       }
     },
 
-    async fetchAiringTodayShows() {
+    async fetchAiringTodayShows(forceRefresh = false) {
+      if (this.airingToday.length > 0 && !forceRefresh) return;
+
       try {
         const { data } = await api.get('/tv/airing_today');
         this.airingToday = data.results;

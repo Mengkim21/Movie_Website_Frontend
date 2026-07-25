@@ -4,6 +4,7 @@ import LoginView from "../views/authView/LoginView.vue";
 import HomeView from "../views/homeView/HomeView.vue";
 import MoviesView from "../views/moviesView/MoviesView.vue";
 import ShowsView from "../views/showView/ShowsView.vue";
+import DetailsView from "../views/detailsView/DetailsView.vue";
 
 const routes = [
   {
@@ -25,7 +26,17 @@ const routes = [
     path: '/shows',
     name: 'Shows',
     component: ShowsView
-  }
+  },
+  {
+    path: '/movie/:id',
+    name: 'movie-details',
+    component: DetailsView
+  },
+  {
+    path: '/tv/:id',
+    name: 'tv-details',
+    component: DetailsView
+  },
 ];
 
 const router = createRouter({
@@ -37,7 +48,7 @@ router.beforeEach((to, from) => {
   const authStore = useAuthStore();
   const isLoggedIn = !!authStore.token;
 
-  const publicPages = ['Login', 'Home', 'Movies', 'Shows'];
+  const publicPages = ['Login', 'Home', 'Movies', 'Shows', 'movie-details', 'tv-details'];
   const authRequired = !publicPages.includes(to.name);
 
   if (to.name !== "Login" && !isLoggedIn && authRequired) {

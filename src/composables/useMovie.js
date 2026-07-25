@@ -7,18 +7,23 @@ export function useMovie() {
   const isLoading = ref(false);
   const isError = ref(null);
 
-  const loadHomeMovies = async () => {
+  const loadHomeMovies = () => {
     isLoading.value = true;
     isError.value = null;
 
     try {
-      await Promise.all([
-        store.fetchTrendingMovies(),
-        store.fetchTopRatedMovies(),
-        store.fetchUpcomingMovies(),
-        store.fetchPopularMovies(),
-        store.fetchFeaturedMovies(),
-      ]);
+      // await Promise.all([
+      //   store.fetchTrendingMovies(),
+      //   store.fetchFeaturedMovies(),
+      //   store.fetchPopularMovies(),
+      //   store.fetchTopRatedMovies(),
+      //   store.fetchUpcomingMovies()
+      // ]);
+      store.fetchTrendingMovies(),
+      store.fetchFeaturedMovies(),
+      store.fetchPopularMovies(),
+      store.fetchTopRatedMovies(),
+      store.fetchUpcomingMovies()
     } catch (err) {
       isError.value = err.response?.data?.message || "Unable to load movies.";
     } finally {
@@ -30,10 +35,5 @@ export function useMovie() {
     isLoading,
     isError,
     loadHomeMovies,
-    trending: store.trending,
-    topRated: store.topRated,
-    upcoming: store.upcoming,
-    popular: store.popular,
-    featured: store.featured,
   }
 }
