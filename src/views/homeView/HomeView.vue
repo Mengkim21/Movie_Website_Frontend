@@ -25,10 +25,7 @@ const featuredMovies = computed(() => {
 
 <template>
   <div class="min-h-screen pb-20">
-    <!-- <div v-if="isLoading" class="h-screen flex items-center justify-center">
-      <div class="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
-    </div> -->
-
+    
     <div v-if="featuredMovies" class="animate-in fade-in duration-700">
       <HeroBanner :movie="movieStore.featured"/>
     </div>

@@ -4,6 +4,7 @@ import api from "../api/httpRequest";
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: JSON.parse(localStorage.getItem('user') || 'null'),
+    profile: null,
     error: null,
     success: null,
     token: localStorage.getItem('token') || null,
@@ -54,6 +55,37 @@ export const useAuthStore = defineStore('auth', {
         return {
           success: false,
           message: err.response?.data?.message || "Register failed"
+        }
+      }
+    },
+
+    async updateProfile() {
+      try {
+        const { data } = await api.patch('/auth/update');
+        this.profile = data.user;
+
+        return {
+          success: true,
+          message: this.success
+        }
+      } catch (err) {
+        this.error = err.response?.data?.message;
+        return {
+          success: false,
+          message: err.response?.data?.message || "Failed to update profile"
+        }
+      }
+    },
+
+    async getProfile() {
+      try {
+        const { data } = await api.get('/auth/me');
+        this.profile = data.user;
+      } catch (err) {
+        this.error = err.response?.data?.message;
+        return {
+          success: false,
+          message: err.response?.data?.message || "Failed to load profile"
         }
       }
     },

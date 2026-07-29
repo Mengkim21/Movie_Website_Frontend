@@ -52,7 +52,7 @@ export function useAuth() {
 
   const handleLogout = () => {
     store.logout();
-    router.push('/login');
+    router.push('/');
   }
 
   return { isLoading, isError, isSuccess, handleLogin, handleRegister, handleLogout }

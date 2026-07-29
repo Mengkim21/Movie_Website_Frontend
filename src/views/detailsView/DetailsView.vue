@@ -1,12 +1,18 @@
 <script setup>
-import { onMounted, watch, computed } from 'vue';
+import { onMounted, watch, computed, ref } from 'vue';
 import { useDetailStore } from '../../stores/detailStore';
+import { useProfileStore } from '../../stores/profileStore.js';
+import { useAuthStore } from '../../stores/authStore.js';
 import { useRoute } from 'vue-router';
-import { Play, Plus, Star } from 'lucide-vue-next';
+import { FastForward, Play, Plus, Star, X } from 'lucide-vue-next';
+import { useToast } from 'vue-toastification';
 import MediaCard from '../../components/MediaCard.vue';
 
 const route = useRoute();
 const detailStore = useDetailStore();
+const profileStore = useProfileStore();
+const authStore = useAuthStore();
+const toast = useToast();
 
 const mediaType = computed(() => 
   route.path.includes('movie') ? 'movies' : 'tv'
@@ -14,6 +20,23 @@ const mediaType = computed(() =>
 
 const loadData = () => {
   detailStore.fetchDetails(route.params.id, mediaType.value);
+};
+
+const handlePlaySimulation = async () => {
+  const item = detailStore.item;
+  const type = route.path.includes('movie') ? 'movie' : 'tv';
+
+  if (!authStore.isLoggedIn) {
+    return toast.warning("Please login to save your watch history!");
+  }
+
+  await profileStore.addToHistory(item.id, type, item.title);
+  console.log("Simulating stream for ID: ", item.id);
+};
+
+const handleWatchlistClick = () => {
+  if (!authStore.isLoggedIn) return toast.error("Login Required!");
+  profileStore.addToWatchlist(detailStore.item);
 };
 
 onMounted(() => {
@@ -52,16 +75,18 @@ watch(() =>
         </div>
       
         <div class="flex items-center gap-4 text-sm lg:text-base mb-3">
-          <button class="flex items-center gap-2 px-5 py-3 bg-white backdrop-blur-md text-black font-bold rounded-lg hover:bg-white/70 transition">
+          <button @click="handlePlaySimulation" class="flex items-center gap-2 px-5 py-3 bg-white backdrop-blur-md text-black font-bold rounded-lg hover:bg-white/70 transition">
             <Play :size="20" fill="black"/> Play  
           </button>
+          
           <a v-if="detailStore.item.trailer"
              :href="`https://www.youtube.com/watch?v=${detailStore.item.trailer}`"
              target="_blank"
              class="flex items-center gap-2 px-5 py-3 bg-white/30 backdrop-blur-md text-white font-bold rounded-xl hover:bg-white/50 transition">
             <Play :size="20" fill="white"/> Trailer
           </a>
-          <button class="flex items-center gap-2 px-5 py-3 bg-white/30 backdrop-blur-md text-white/70 font-bold rounded-lg hover:bg-white/50 transition">
+
+          <button @click="handleWatchlistClick" class="flex items-center gap-2 px-5 py-3 bg-white/30 backdrop-blur-md text-white/70 font-bold rounded-lg hover:bg-white/50 transition">
             <Plus :size="20" /> Watchlist
           </button>
         </div>
@@ -77,6 +102,12 @@ watch(() =>
           <span v-if="detailStore.item.runtime" class="flex items-center">
             <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/20">
               {{ detailStore.item.runtime }} min
+            </div>
+          </span>
+
+          <span v-if="detailStore.item.number_of_episodes" class="flex items-center">
+            <div class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/20">
+              {{ detailStore.item.number_of_episodes }} episodes
             </div>
           </span>
 
