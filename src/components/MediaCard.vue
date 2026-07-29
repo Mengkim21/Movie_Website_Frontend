@@ -14,7 +14,7 @@ defineProps({
     class="relative block overflow-hidden rounded-xl bg-gray-800 transition-transform hover:scale-105 duration-300"
   >
     <img
-      :src="item.poster || 'https://via.placeholder.com/500x750?text=No+Poster+Found'"
+      :src="item.poster"
       :alt="item.title"
       class="h-full w-full object-cover transition-opacity duration-300 hover:opacity-70"
     />   

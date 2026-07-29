@@ -12,7 +12,7 @@ const loginForm = ref({
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-900 text-white">
+  <div class="flex min-h-screen items-center justify-center text-white">
     <div class="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg">
       <div class="space-y-3 mb-[3rem]">
         <p class="text-sm text-gray-500 font-semibold">SIGN IN</p>

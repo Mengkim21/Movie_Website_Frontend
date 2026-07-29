@@ -7,7 +7,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="relative h-[85vh] w-full">
+  <div v-if="movie" class="relative h-[85vh] w-full">
     <div class="absolute inset-0">
       <img 
         :src="movie?.backdrop"
