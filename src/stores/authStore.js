@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from "../api/httpRequest";
+import { useProfileStore } from "./profileStore";
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -24,15 +25,16 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('token', this.token);
 
         this.error = null;
+        this.success = data.message;
         return { 
           success: true, 
-          message: data.message 
+          message: data.message || "Log in successful!"
         };
       } catch (err) {
         this.error = err.response?.data?.message;
         return {
           success: false,
-          message: err.response?.data?.message || "Login failed"
+          message: err.response?.data?.message || "Log in failed",
         }
       }
     },
@@ -40,39 +42,41 @@ export const useAuthStore = defineStore('auth', {
     async register(credentials) {
       try {
         const { data } = await api.post('/auth/register', credentials);
-        this.token = data.session.access_token;
+        this.token = data.session?.access_token;
         this.user = data.user;
         localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('token', this.token);
 
-        this.success = data.message || "Register successful!";
+        this.error = null;
+        this.success = data.message;
         return {
           success: true,
-          message: this.success,
+          message: data.message || "Register successful!",
         }
       } catch (err) {
         this.error = err.response?.data?.message;
         return {
           success: false,
-          message: err.response?.data?.message || "Register failed"
+          message: err.response?.data?.message || "Register failed",
         }
       }
     },
 
-    async updateProfile() {
+    async updateProfile(credential) {
       try {
-        const { data } = await api.patch('/auth/update');
+        const { data } = await api.patch('/auth/update', credential);
         this.profile = data.user;
 
+        this.success = data.message;
         return {
           success: true,
-          message: this.success
+          message: data.message || "Profile updated successfully",
         }
       } catch (err) {
         this.error = err.response?.data?.message;
         return {
           success: false,
-          message: err.response?.data?.message || "Failed to update profile"
+          message: err.response?.data?.message || "Failed to update profile",
         }
       }
     },
@@ -82,10 +86,10 @@ export const useAuthStore = defineStore('auth', {
         const { data } = await api.get('/auth/me');
         this.profile = data.user;
       } catch (err) {
-        this.error = err.response?.data?.message;
+        this.error = err.response?.data?.message || "Failed to load profile";
         return {
           success: false,
-          message: err.response?.data?.message || "Failed to load profile"
+          message: this.error
         }
       }
     },
@@ -95,6 +99,9 @@ export const useAuthStore = defineStore('auth', {
       this.token = null;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+
+      const profileStore = useProfileStore();
+      profileStore.resetCollections();
     }
   }
 })

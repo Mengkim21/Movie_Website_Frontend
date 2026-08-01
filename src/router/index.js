@@ -7,12 +7,18 @@ import ShowsView from "../views/showView/ShowsView.vue";
 import DetailsView from "../views/detailsView/DetailsView.vue";
 import SearchView from "../views/searchView/SearchView.vue";
 import ProfileView from "../views/authView/ProfileView.vue";
+import RegisterView from "../views/authView/RegisterView.vue";
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
     component: LoginView
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView
   },
   {
     path: '/',
@@ -60,7 +66,7 @@ router.beforeEach((to, from) => {
   const authStore = useAuthStore();
   const isLoggedIn = !!authStore.token;
 
-  const publicPages = ['Login', 'Home', 'Movies', 'Shows', 'movie-details', 'tv-details', 'Search', 'Profile'];
+  const publicPages = ['Login', 'Register', 'Home', 'Movies', 'Shows', 'movie-details', 'tv-details', 'Search', 'Profile'];
   const authRequired = !publicPages.includes(to.name);
 
   if (to.name !== "Login" && !isLoggedIn && authRequired) {
@@ -68,6 +74,12 @@ router.beforeEach((to, from) => {
   } else if (to.name === "Login" && isLoggedIn) {
     return { path: "/" };
   } 
+
+  if (to.name !== "Register" && !isLoggedIn && authRequired) {
+    return { name: "Register" };
+  } else if (to.name === 'Register' && isLoggedIn) {
+    return { path: "/" };
+  }
 });
 
 export default router;

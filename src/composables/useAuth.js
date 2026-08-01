@@ -1,6 +1,9 @@
 import { ref } from "vue";
 import { useAuthStore } from "../stores/authStore";
 import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 export function useAuth() {
   const store = useAuthStore();
@@ -20,11 +23,13 @@ export function useAuth() {
       if (res.success) {
         isSuccess.value = res.message;
         setTimeout(() => router.push('/'), 1000 );
+        toast.success("Account log in successfully!");
       } else {
         isError.value = res.message;
+        toast.error("Invalid email or password!");
       }
     } catch (err) {
-      isError.value =  err.response?.data?.message || "Login failed"
+      isError.value =  err.response?.data?.message || "Log in failed";
     } finally {
       isLoading.value = false;
     }
@@ -40,11 +45,13 @@ export function useAuth() {
       if (res.success) {
         isSuccess.value = res.message;
         setTimeout(() => router.push('/login'), 1500);
+        toast.success("Account created successfully!");
       } else {
         isError.value = res.message;
+        toast.error("Invalid field input!");
       }
     } catch (err) {
-      isError.value = err.response?.data?.message || "Register failed"
+      isError.value = err.response?.data?.message;
     } finally {
       isLoading.value = false;
     }

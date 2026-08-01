@@ -25,9 +25,9 @@ export const useProfileStore = defineStore('profile', {
           api.get('/reviews/me')
         ]);
 
-        this.watchlist = watchlistRes.data.results;
-        this.history = historyRes.data.results;
-        this.reviews = reviewsRes.data.results;
+        this.watchlist = watchlistRes.data.results || [];
+        this.history = historyRes.data.results || [];
+        this.reviews = reviewsRes.data.results || [];
       } catch (err) {
         this.isError = err.response?.data?.message || "Failed to load profile data";
       } finally {
@@ -74,6 +74,13 @@ export const useProfileStore = defineStore('profile', {
       } catch (err) {
         console.error("History error");
       }
+    },
+
+    resetCollections() {
+      this.watchlist = [];
+      this.history = [];
+      this.reviews = [];
+      this.isError = null;
     }
   }
 });
