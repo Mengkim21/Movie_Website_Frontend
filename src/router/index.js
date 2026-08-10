@@ -53,7 +53,8 @@ const routes = [
   {
     path: '/profile',
     name: 'Profile',
-    component: ProfileView
+    component: ProfileView,
+    meta: { requiresAuth: true }
   }
 ];
 
@@ -62,24 +63,43 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from) => {
+// router.beforeEach((to, from) => {
+//   const authStore = useAuthStore();
+//   const isLoggedIn = !!authStore.token;
+
+//   const publicPages = ['Login', 'Register', 'Home', 'Movies', 'Shows', 'movie-details', 'tv-details', 'Search', 'Profile'];
+//   const authRequired = !publicPages.includes(to.name);
+
+//   if (to.name !== "Login" && !isLoggedIn && authRequired) {
+//     return { name: "Login" };
+//   } else if (to.name === "Login" && isLoggedIn) {
+//     return { path: "/" };
+//   } 
+
+//   if (to.name !== "Register" && !isLoggedIn && authRequired) {
+//     return { name: "Register" };
+//   } else if (to.name === 'Register' && isLoggedIn) {
+//     return { path: "/" };
+//   }
+// });
+
+router.beforeEach(async (to, from) => {
   const authStore = useAuthStore();
   const isLoggedIn = !!authStore.token;
 
-  const publicPages = ['Login', 'Register', 'Home', 'Movies', 'Shows', 'movie-details', 'tv-details', 'Search', 'Profile'];
-  const authRequired = !publicPages.includes(to.name);
-
-  if (to.name !== "Login" && !isLoggedIn && authRequired) {
-    return { name: "Login" };
-  } else if (to.name === "Login" && isLoggedIn) {
-    return { path: "/" };
-  } 
-
-  if (to.name !== "Register" && !isLoggedIn && authRequired) {
-    return { name: "Register" };
-  } else if (to.name === 'Register' && isLoggedIn) {
-    return { path: "/" };
+  if (!authStore.isValidated && isLoggedIn) {
+    await authStore.checkAuth();
   }
+
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return { name: 'Login' };
+  }
+
+  if ((to.name === 'Login' || to.name === 'Register') && isLoggedIn) {
+    return { name: 'Home' };
+  }
+
+  return true;
 });
 
 export default router;

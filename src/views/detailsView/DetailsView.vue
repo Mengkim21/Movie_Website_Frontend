@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router';
 import { FastForward, Play, Plus, Star, X } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 import MediaCard from '../../components/MediaCard.vue';
+import { useMediaActions } from '../../composables/useMediaActions.js';
 
 const route = useRoute();
 const detailStore = useDetailStore();
@@ -22,17 +23,23 @@ const loadData = () => {
   detailStore.fetchDetails(route.params.id, mediaType.value);
 };
 
+// const handlePlaySimulation = async () => {
+//   const item = detailStore.item;
+//   const type = route.path.includes('movie') ? 'movie' : 'tv';
+
+//   if (!authStore.isLoggedIn) {
+//     return toast.warning("Please login to save your watch history!");
+//   }
+
+//   await profileStore.addToHistory(item.id, type, item.title);
+//   console.log("Simulating stream for ID: ", item.id);
+// };
+
+const { playMedia } = useMediaActions();
 const handlePlaySimulation = async () => {
-  const item = detailStore.item;
-  const type = route.path.includes('movie') ? 'movie' : 'tv';
-
-  if (!authStore.isLoggedIn) {
-    return toast.warning("Please login to save your watch history!");
-  }
-
-  await profileStore.addToHistory(item.id, type, item.title);
-  console.log("Simulating stream for ID: ", item.id);
-};
+  const type = detailStore.item?.media_type || 'movie';
+  await playMedia(detailStore.item, type);
+}
 
 const handleWatchlistClick = () => {
   if (!authStore.isLoggedIn) return toast.error("Login Required!");
@@ -153,7 +160,7 @@ watch(() =>
         </div>
       </section>
 
-      <!-- Director -->
+      <!-- Cast -->
       <section v-if="detailStore.item.cast?.length" class="mb-6">
         <div>
           <h2 class="text-xl font-bold text-gray-300 tracking-wide">Top Cast</h2>

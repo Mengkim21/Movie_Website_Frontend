@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { computed } from 'vue';
 import { useAuthStore } from '../stores/authStore';
@@ -45,6 +45,12 @@ const loginMenu = [
 const authStore = useAuthStore();
 const { handleLogout} = useAuth();
 
+const userInital = computed(() => {
+  const name = authStore.profile?.username;
+  return name ? name.charAt(0).toUpperCase() : '';
+})
+
+onMounted(async () => await authStore.getProfile());
 </script>
 
 <template>
@@ -102,37 +108,33 @@ const { handleLogout} = useAuth();
           </router-link>
         </div>
 
-        <!-- Login & Logout-->
-        <ul class="flex gap-6 items-center">
-          <router-link 
-            v-if="authStore.user" 
-            to="/profile"
-            class="flex gap-4 items-center">
-            <span class="text-gray-300 bg-white/50 border-2 border-gray-300 rounded-full p-3">
-              {{ authStore.user?.name }}
-            </span>
-            <!-- <button
-              @click="handleLogout"
-              class="text-gray-300 font-semibold hover:text-white rounded-xl hover:bg-white/15 transition-colors duration-200 py-2 px-3 cursor-pointer"
+        <!-- Login & Profile-->
+        <ul class="flex items-center">
+            <router-link 
+              v-if="authStore.isLoggedIn" 
+              to="/profile"
+              class="relative">
+              <div class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 bg-indigo">
+                <p class="text-gray-300 text-2xl font-semibold">
+                  {{ userInital }}
+                </p>
+              </div>
+            </router-link>
+    
+            <router-link
+              v-else
+              v-for="(login, index) in loginMenu"
+              :key="index"
+              :to="login.path"
+              :class="[
+                'text-gray-300 font-semibold transition-colors duration-200 p-3',
+                  isActive(login.path)
+                    ? 'text-white rounded-xl bg-white/35 py-2 px-3'
+                    : 'hover:text-white rounded-xl hover:bg-white/15 py-2 px-3'
+              ]"
             >
-              Logout
-            </button> -->
-          </router-link>
-  
-          <router-link
-            v-else
-            v-for="(login, index) in loginMenu"
-            :key="index"
-            :to="login.path"
-            :class="[
-              'text-gray-300 font-semibold transition-colors duration-200 p-3',
-                isActive(login.path)
-                  ? 'text-white rounded-xl bg-white/35 py-2 px-3'
-                  : 'hover:text-white rounded-xl hover:bg-white/15 py-2 px-3'
-            ]"
-          >
-            {{ login.name }}
-          </router-link>
+              {{ login.name }}
+            </router-link>
         </ul>
       </div>
     </div>

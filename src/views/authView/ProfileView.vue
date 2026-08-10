@@ -39,7 +39,6 @@ const tablist = [
 const handleUpdateUsername = async () => {
   if (!newUsername.value.trim()) return;
   try {
-    // Assuming your authStore has an updateProfile action
     await authStore.updateProfile({ username: newUsername.value });
     isEditing.value = false;
     toast.success('Username updated successfully!');
@@ -57,7 +56,7 @@ const { handleLogout} = useAuth();
      <!-- User profile section -->
       <section class="flex flex-col md:flex-row items-center gap-8 mb-12 border-b border-white/5 pb-12">
         <!-- Avatar Wrapper -->
-        <div class="relative group">
+        <div class="relative">
           <div class="w-32 h-32 md:w-40 md:h-48 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-700 to-purple-800 flex items-center justify-center text-5xl font-black tracking-tighter shadow-2xl">
             {{ authStore.profile?.username?.charAt(0).toUpperCase() }}
           </div>
@@ -77,7 +76,7 @@ const { handleLogout} = useAuth();
         </div>
 
         <div>
-          <button @click="handleLogout" class="flex items-center gap-2 px-6 py-3 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition font-bold border border-red-500/10">
+          <button @click="handleLogout" class="flex items-center gap-2 px-6 py-3 bg-red-600/50 text-white/80 hover:bg-red-600 hover:text-white rounded-xl transition font-bold border border-red-500/10">
             <LogOut :size="18" /> Logout
           </button>
         </div>
@@ -108,7 +107,7 @@ const { handleLogout} = useAuth();
           <div v-for="item in profileStore.watchlist" :key="item.media_id" class="relative group">
             
             <MediaCard :item="item.media" />
-            <!-- Floating Trash Icon to Delete from Watchlist -->
+            <!-- Remove button -->
             <button 
               @click="profileStore.removeFromWatchlist(item.media_id, item.media_type)"
               class="absolute top-3 right-3 p-2 bg-black/80 backdrop-blur-md rounded-lg text-red-500 opacity-0 group-hover:opacity-100 transition duration-200 hover:bg-red-600 hover:text-white"
@@ -126,8 +125,18 @@ const { handleLogout} = useAuth();
       <!-- History Tab -->
        <div v-if="activeTab === 'history'" class="p-3">
         <div v-if="profileStore.history?.length" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          <div v-for="item in profileStore.history" :key="item.media_id">
+          <div v-for="item in profileStore.history" :key="item.media_id" class="relative group">
+            
             <MediaCard :item="item.media" />
+
+             <!-- Remove button -->
+            <button 
+              @click="profileStore.removeFromHistory(item.media_id, item.media_type)"
+              class="absolute top-3 right-3 p-2 bg-black/80 backdrop-blur-md rounded-lg text-red-500 opacity-0 group-hover:opacity-100 transition duration-200 hover:bg-red-600 hover:text-white"
+            >
+              <Trash2 :size="16" />
+            </button>
+
             <!-- Simulated Progress Bar -->
             <div class="mt-3 w-full h-1 bg-white/10 rounded-full overflow-hidden">
               <div class="h-full bg-blue-500 w-[75%]"></div>
