@@ -1,9 +1,23 @@
 <script setup>
 import { Star } from 'lucide-vue-next';
+import { useMediaActions } from '../composables/useMediaActions';
+import { useRouter } from 'vue-router';
 
-defineProps({
+const props = defineProps({
   movie: Object
 })
+
+const router = useRouter();
+const { playMedia } = useMediaActions();
+
+const handlePlay = async () => {
+  await playMedia(props.movie, 'movie');
+}
+
+const detailsNavigation = () => {
+  const type = props.movie?.media_type === 'tv' ? 'tv' : 'movie';
+  router.push(`/${type}/${props.movie.id}`);
+}
 </script>
 
 <template>
@@ -37,11 +51,13 @@ defineProps({
 
       <div class="flex gap-4">
         <button
+          @click="handlePlay"
           class="px-10 py-4 bg-white text-black font-black rounded-4xl hover:bg-gray-300 transition uppercase tracking-widest text-sm cursor-pointer"
         >
           Play
         </button>
         <button
+          @click="detailsNavigation"
           class="px-10 py-4 bg-gray-500/50 text-white backdrop-blur-md font-black rounded-4xl hover:bg-gray-500/70 transition uppercase tracking-widest text-sm cursor-pointer"
         >
           More Info

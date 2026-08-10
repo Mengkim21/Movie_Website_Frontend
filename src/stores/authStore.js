@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', {
     error: null,
     success: null,
     token: localStorage.getItem('token') || null,
+    isValidated: false
   }),
 
   getters: {
@@ -23,6 +24,8 @@ export const useAuthStore = defineStore('auth', {
         this.user = data.user;
         localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('token', this.token);
+
+        await this.getProfile();
 
         this.error = null;
         this.success = data.message;
@@ -93,15 +96,39 @@ export const useAuthStore = defineStore('auth', {
         }
       }
     },
+
+    async checkAuth() {
+      if (!this.token) {
+        this.isValidated = false;
+        return;
+      }
+
+      try {
+        const { data } = await api.get('/auth/me');
+        this.user = data.user;
+        this.isValidated = true;
+      } catch (error) {
+        console.error('Session expired');
+        this.logout();
+      } 
+    },
+
+    updateToken(newToken) {
+      this.token = newToken;
+      localStorage.setItem('token', newToken);
+    },
     
     logout() {
       this.user = null;
       this.token = null;
+      this.isValidated = false;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
       const profileStore = useProfileStore();
       profileStore.resetCollections();
+      
+      window.location.href = '/login';
     }
   }
 })

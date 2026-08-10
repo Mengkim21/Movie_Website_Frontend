@@ -72,7 +72,21 @@ export const useProfileStore = defineStore('profile', {
         toast.info(`Now playing: ${title}. Added to history.`);
         this.fetchUserCollections();
       } catch (err) {
-        console.error("History error");
+        toast.error("History error");
+      }
+    },
+    
+    async removeFromHistory(mediaId, mediaType) {
+      try {
+        await api.delete('/history/remove', {
+          data: { media_id: mediaId, media_type: mediaType }
+        });
+
+        toast.success("Remove from history.");
+        this.fetchUserCollections();
+      } catch (err) {
+        console.error("Failed to remove item: ", err.response?.data);
+        toast.error("Failed to remove item.");
       }
     },
 
