@@ -84,18 +84,17 @@ const router = createRouter({
 // });
 
 router.beforeEach(async (to, from) => {
-  const authStore = useAuthStore();
-  const isLoggedIn = !!authStore.token;
+  const authStore = useAuthStore(); 
 
-  if (!authStore.isValidated && isLoggedIn) {
+  if (!authStore.authStatus === 'loading') {
     await authStore.checkAuth();
   }
 
-  if (to.meta.requiresAuth && !isLoggedIn) {
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
     return { name: 'Login' };
   }
 
-  if ((to.name === 'Login' || to.name === 'Register') && isLoggedIn) {
+  if ((to.name === 'Login' || to.name === 'Register') && authStore.isLoggedIn) {
     return { name: 'Home' };
   }
 

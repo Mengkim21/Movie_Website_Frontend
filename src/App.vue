@@ -6,22 +6,28 @@ import { useAuthStore } from './stores/authStore.js';
 
 const authStore = useAuthStore();
 
-onMounted(() => {
-  
+onMounted(async () => {
   authStore.checkAuth();
+
+  const accessToken = localStorage.getItem('token');
+  const refreshToken = localStorage.getItem('refresh_token');
+
+  if (accessToken && refreshToken) {
+    const { data, error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
+
+    if (error) {
+      console.log("Session re-sync failed:", error.message);
+      authStore.logout();
+    }
+  }
 
   supabase.auth.onAuthStateChange(async (event, session) => {
 
     if (session && (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN')) {
-      authStore.updateToken(session.access_token);
-
-      if (!authStore.profile) {
-        await authStore.getProfile();
-      }
-    }
-
-    if (event === 'SIGNED_OUT') {
-      authStore.logout();
+      authStore.updateToken(session);
     }
   });
 });

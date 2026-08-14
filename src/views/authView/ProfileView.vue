@@ -154,7 +154,7 @@ const { handleLogout} = useAuth();
       <div v-if="activeTab === 'reviews'" class="space-y-6">
         <div v-if="profileStore.reviews?.length" class="space-y-4">
           <div v-for="review in profileStore.reviews" :key="review.id" class="bg-white/5 p-6 rounded-2xl border border-white/10 flex gap-6">
-            <img :src="review.media.poster_path" class="w-20 h-28 object-cover rounded-lg shadow-lg" />
+            <img :src="review.media.poster" class="w-20 h-28 object-cover rounded-lg shadow-lg" />
             <div class="flex-1">
               <div class="flex justify-between items-start mb-2">
                 <h3 class="text-xl font-bold text-blue-400">{{ review.media.title }}</h3>
