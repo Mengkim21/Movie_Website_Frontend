@@ -110,6 +110,7 @@ onMounted(async () => await authStore.getProfile());
 
         <!-- Login & Profile-->
         <ul class="flex items-center">
+         
             <router-link 
               v-if="authStore.isLoggedIn" 
               to="/profile"
@@ -120,21 +121,22 @@ onMounted(async () => await authStore.getProfile());
                 </p>
               </div>
             </router-link>
-    
+            
             <router-link
-              v-else
-              v-for="(login, index) in loginMenu"
-              :key="index"
-              :to="login.path"
-              :class="[
+            v-else
+            v-for="(login, index) in loginMenu"
+            :key="index"
+            :to="login.path"
+            :class="[
                 'text-gray-300 font-semibold transition-colors duration-200 p-3',
                   isActive(login.path)
                     ? 'text-white rounded-xl bg-white/35 py-2 px-3'
                     : 'hover:text-white rounded-xl hover:bg-white/15 py-2 px-3'
               ]"
             >
-              {{ login.name }}
+            {{ login.name }}
             </router-link>
+          
         </ul>
       </div>
     </div>

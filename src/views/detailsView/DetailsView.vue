@@ -8,31 +8,21 @@ import { FastForward, Play, Plus, Star, X } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 import MediaCard from '../../components/MediaCard.vue';
 import { useMediaActions } from '../../composables/useMediaActions.js';
+import { useReviewStore } from '../../stores/reviewStore.js';
 
 const route = useRoute();
 const detailStore = useDetailStore();
 const profileStore = useProfileStore();
 const authStore = useAuthStore();
+const reviewStore = useReviewStore();
 const toast = useToast();
 
 const mediaType = computed(() => 
   route.path.includes('movie') ? 'movies' : 'tv'
 );
 
-const loadData = () => {
-  detailStore.fetchDetails(route.params.id, mediaType.value);
-};
-
-// const handlePlaySimulation = async () => {
-//   const item = detailStore.item;
-//   const type = route.path.includes('movie') ? 'movie' : 'tv';
-
-//   if (!authStore.isLoggedIn) {
-//     return toast.warning("Please login to save your watch history!");
-//   }
-
-//   await profileStore.addToHistory(item.id, type, item.title);
-//   console.log("Simulating stream for ID: ", item.id);
+// const loadData = () => {
+//   detailStore.fetchDetails(route.params.id, mediaType.value);
 // };
 
 const { playMedia } = useMediaActions();
@@ -46,14 +36,32 @@ const handleWatchlistClick = () => {
   profileStore.addToWatchlist(detailStore.item);
 };
 
-onMounted(() => {
-  loadData();
+const newReview = ref({
+  rating: 10,
+  content: ''
+});
+
+onMounted(async () => {
+  await detailStore.fetchDetails(route.params.id, mediaType.value);
+
+  reviewStore.fetchMediaReviews(route.params.id, mediaType.value === 'movies' ? 'movie' : 'tv');
 });
 
 watch(() =>
   route.params.id, () =>
   loadData()
 );
+
+const submitReview = () => {
+  reviewStore.postReview({
+    media_id: detailStore.item.id,
+    media_type: mediaType.value === 'movies' ? 'movie' : 'tv',
+    rating: newReview.value.rating,
+    content: newReview.value.content
+  });
+
+  newReview.value.content = '';
+}
 </script>
 
 <template>
@@ -217,6 +225,51 @@ watch(() =>
           />
         </div>
       </section>
+
+      <!-- Reviews Section -->
+      <section class="px-6 lg:px-20 mt-20 pb-20">
+    <h2 class="text-3xl font-black uppercase tracking-tighter mb-10">User Reviews</h2>
+
+    <!-- Review Form (Only for logged in users) -->
+    <div v-if="authStore.isLoggedIn" class="bg-white/5 p-8 rounded-3xl border border-white/10 mb-12">
+      <h3 class="text-lg font-bold mb-4">Write a Review</h3>
+      <div class="flex gap-4 mb-4">
+        <select v-model="newReview.rating" class="bg-black border border-white/10 p-2 rounded-lg text-yellow-500 font-bold">
+          <option v-for="n in 10" :key="n" :value="n">★ {{ n }}</option>
+        </select>
+        <textarea 
+          v-model="newReview.content" 
+          placeholder="What did you think of the story..."
+          class="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-blue-500 transition"
+        ></textarea>
+      </div>
+      <button @click="submitReview" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold transition">
+        Post Review
+      </button>
+    </div>
+
+    <!-- Review List -->
+    <div class="space-y-6">
+      <div v-for="review in reviewStore.mediaReviews" :key="review.id" 
+           class="bg-white/5 p-6 rounded-2xl border border-white/5">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center gap-3">
+             <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-xs">
+                {{ review.user?.username.charAt(0) }}
+             </div>
+             <span class="font-bold">{{ review.user?.username }}</span>
+          </div>
+          <span class="text-yellow-500 font-bold text-lg">★ {{ review.rating }}</span>
+        </div>
+        <p class="text-gray-400 leading-relaxed">{{ review.content }}</p>
+        <p class="text-[10px] text-gray-600 mt-4 uppercase">{{ new Date(review.created_at).toLocaleDateString() }}</p>
+      </div>
+
+      <div v-if="!reviewStore.mediaReviews.length" class="text-gray-600 italic">
+        No reviews yet. Be the first to review!
+      </div>
+    </div>
+  </section>
     </div>
   </main>
 </template>

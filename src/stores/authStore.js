@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from "../api/httpRequest";
+import { supabase } from "../config/supabase";
 import { useProfileStore } from "./profileStore";
 
 export const useAuthStore = defineStore('auth', {
@@ -9,21 +10,32 @@ export const useAuthStore = defineStore('auth', {
     error: null,
     success: null,
     token: localStorage.getItem('token') || null,
-    isValidated: false
+    isValidated: false,
+    authStatus: 'loading'
   }),
 
   getters: {
     isLoggedIn: (state) => !!state.token && !!state.user,
+    // isLoggedIn: (state) => state.authStatus === 'authenticated',
   },
 
   actions: {
     async login(credentials) {
       try {
         const { data } = await api.post('/auth/login', credentials);
+
+        const { access_token, refresh_token } = data.session;
+
         this.token = data.session.access_token;
         this.user = data.user;
         localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('token', this.token);
+        localStorage.setItem('refresh_token', refresh_token);
+
+        await supabase.auth.setSession({
+          access_token,
+          refresh_token
+        });
 
         await this.getProfile();
 
@@ -106,27 +118,34 @@ export const useAuthStore = defineStore('auth', {
       try {
         const { data } = await api.get('/auth/me');
         this.user = data.user;
+        // this.authStatus = 'authenticated';
         this.isValidated = true;
       } catch (error) {
         console.error('Session expired');
-        this.logout();
+        this.setLoggedOut();
       } 
     },
 
-    updateToken(newToken) {
-      this.token = newToken;
-      localStorage.setItem('token', newToken);
+    updateToken(session) {
+      this.token = session.access_token;
+      localStorage.setItem('token', session.access_token);
+      localStorage.setItem('refresh_token', session.refresh_token);
     },
-    
-    logout() {
+
+    setLoggedOut() {
       this.user = null;
       this.token = null;
+      // this.authStatus = 'unauthenticated';
       this.isValidated = false;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-
-      const profileStore = useProfileStore();
-      profileStore.resetCollections();
+      localStorage.removeItem('refresh_token');
+    },
+    
+    logout() {
+      this.setLoggedOut();
+      // const profileStore = useProfileStore();
+      // profileStore.resetCollections();
       
       window.location.href = '/login';
     }
